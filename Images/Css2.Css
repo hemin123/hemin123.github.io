@@ -1,0 +1,231 @@
+BODY {
+SCROLLBAR-FACE-COLOR:#6EB725;
+SCROLLBAR-HIGHLIGHT-COLOR:#6EB725;
+SCROLLBAR-SHADOW-COLOR:#6EB725;
+SCROLLBAR-3DLIGHT-COLOR:#54A404;
+SCROLLBAR-ARROW-COLOR:#ffffff;
+SCROLLBAR-TRACK-COLOR:#EDEDED;
+SCROLLBAR-DARKSHADOW-COLOR:#54A404;
+margin:0px;
+text-align:left;
+background:#e7ffe7;
+}
+/*以上为滚动条颜色*/
+
+td,body,input,select {font-size: 12px;font-family:'宋体,verdana';color:#000000;line-height:18px}
+.ui_top{color:#000000;font-size:12px;line-height:18px;}
+.ui_top a:link{color:#000000;text-decoration:none;}
+.ui_top a:visited{color:#000000;text-decoration:none;}
+.ui_top a:hover {color:#000000;text-decoration:underline;}
+
+a:link{color: #000000;text-decoration: none;}
+a:visited{color: #000000;text-decoration: none;}
+a:hover {color: #000000;text-decoration: underline;}
+
+.black {color:#3C3C3C;line-height:18px;font-size:12px;}
+.black a:link{color: #3C3C3C;text-decoration:none;font-size:12px;}
+.black a:visited {color: #3C3C3C;text-decoration:none;font-size:12px;}
+.black a:hover{color:#3C3C3C;text-decoration:underline;font-size:12px;}
+
+.nav {font-size:12px;color:#87DCFF;line-height:18px;}
+.nav A:link {color:#87DCFF;text-decoration:none;}
+.nav A:Visited {color:#87DCFF;text-decoration:none;}
+.nav A:Hover {color:#87DCFF;TEXT-DECORATION: underline;}
+
+/*以上不改*/
+
+.a01 {font:12px/18px;color:#ffffff;}
+.a01 a:link{color:#ffffff;text-decoration:none}
+.a01 a:visited{color:#ffffff;text-decoration:none}
+.a01 a:hover {color:#ffffff;text-decoration:underline}
+
+.a02 {font:12px/20px;color:#004E90;}
+.a02 td {font:12px/20px;color:#004E90;}
+.a02 a:link{color:#004E90;text-decoration:none}
+.a02 a:visited{color:#004E90;text-decoration:none}
+.a02 a:hover {color:#004E90;text-decoration:underline}
+
+.a03 {font:12px/20px;color:#535353}
+.a03 td {font:12px/20px;color:#535353}
+.a03 a:link{color:#535353;text-decoration:none}
+.a03 a:visited{color:#535353;text-decoration:none}
+.a03 a:hover {color:#535353;text-decoration:underline}
+
+.a05 {font:12px/18px;color:#00A3E5}
+.a05 td {font:12px/18px;color:#00A3E5}
+.a05 a:link{color:#00A3E5;text-decoration:none}
+.a05 a:visited{color:#00A3E5;text-decoration:none}
+.a05 a:hover {color:#00A3E5;text-decoration:underline}
+
+.a06 {font: 12px/18px;color:#ffffff;padding-top:3px;}
+.a06 a:link{color:#ffffff;text-decoration:none}
+.a06 a:visited{color:#ffffff;text-decoration:none}
+.a06 a:hover {color:#ffffff;text-decoration:underline}
+
+.a07 {font: bold 12px/18px;color:#FF772F;padding-top:5px;
+filter: Dropshadow(offx=1,offy=0,color=#DFF8FD
+        Dropshadow(offx=0,offy=1,color=#DFF8FD)
+        Dropshadow(offx=0,offy=-1,color=#DFF8FD)
+        Dropshadow(offx=-1,offy=0,color=#DFF8FD);
+
+}
+.a08 {font: 12px/18px;color:#848484;}
+
+.a09 {font:12px/18px;color:#FF6204;}
+.a09 a:link{color:#FF6204;text-decoration:none}
+.a09 a:visited{color:#FF6204;text-decoration:underline}
+.a09 a:hover {color:#FF6204;text-decoration:underline}
+
+.a10 {font:12px/18px;color:#008649;padding-top:3px;}
+.a10 a:link{color:#008649;text-decoration:none}
+.a10 a:visited{color:#008649;text-decoration:none}
+.a10 a:hover {color:#008649;text-decoration:underline}
+
+.a11 {font:12px/18px;color:#F4447E;}
+.a11 td {font:12px/18px;color:#F4447E;}
+.a11 a:link{color:#F4447E;text-decoration:none}
+.a11 a:visited{color:#F4447E;text-decoration:none}
+.a11 a:hover {color:#F4447E;text-decoration:underline}
+
+.a12 {font:12px/18px;color:#6038A8;padding-top:3px;}
+.a12 a:link{color:#6038A8;text-decoration:none}
+.a12 a:visited{color:#6038A8;text-decoration:none}
+.a12 a:hover {color:#6038A8;text-decoration:underline}
+
+.a13 {font:12px/18px;color:#7151AC;}
+.a13 td {font:12px/18px;color:#7151AC;}
+.a13 a:link{color:#7151AC;text-decoration:none}
+.a13 a:visited{color:#7151AC;text-decoration:underline}
+.a13 a:hover {color:#7151AC;text-decoration:underline}
+
+.a14 {font:12px/18px;color:#004E90;}
+.a14 a:link{color:#004E90;text-decoration:none}
+.a14 a:visited{color:#004E90;text-decoration:underline}
+.a14 a:hover {color:#004E90;text-decoration:underline}
+
+
+.pd3{	padding-top:3px;}
+.img1{border:1px solid #125992;}
+
+.tab2{ border: 1px solid #09AFCC; border-top:0px;}
+.tab3{ border: 1px solid #1EBB89; }
+.tab4{ border: 1px solid #A89DE2; }
+.tab5{ border: 1px solid #FFC2D1; }
+/*查询文本框颜色*/
+.searchtext
+{
+border:1px solid #54A404;
+}
+/*MY-CSS*/
+/*频道导航背景*/
+.channelbg
+{
+background:#6EB725;
+text-align:center;
+color:#ffffff;
+}
+/*查询文字颜色*/
+.search
+{
+color:#408004;
+}
+/*登陆文本框颜色*/
+.logintext
+{
+border:1px solid #54A404;
+background:#FCFCD4;
+}
+/*导航连接样式*/
+a.Channel:link {color: #ffffff;}
+a.Channel:visited {color: #ffffff;}
+a.Channel:hover{COLOR: #ffffff;text-decoration: underline;}
+a.Channel:active {color: #ffffff;}
+/*登陆后的样式*/
+.loginlater
+{
+color:#ffffff;
+}
+/*版权连接样式*/
+a.Copy:link {color: #2C5404;}
+a.Copy:visited {color: #2C5404;}
+a.Copy:hover{COLOR: #2C5404;text-decoration: underline;}
+a.Copy:active {color: #2C5404;}
+/*版权字体样式*/
+.copyfont
+{
+color:#2C5404;
+text-align:center;
+}
+.indexborder
+{
+border-top:1px #6EB725 solid;
+border-right: 1px #FFFBF4 solid;
+border-left: 1px #6EB725 solid;
+border-bottom: 1px #6EB725 solid;
+}
+.indextd
+{
+border-top:1px #FFFBF4 solid;
+border-right: 1px #6EB725 solid;
+border-left: 1px #FFFBF4 solid;
+border-bottom: 1px #6EB725 solid;
+background:#FFFBF4;
+height:25px;
+}
+.indextd2
+{
+border-top:1px #FFFBF4 solid;
+border-right: 1px #6EB725 solid;
+border-left: 1px #FFFBF4 solid;
+border-bottom: 1px #6EB725 solid;
+background:#FFFFFF;
+height:20px;
+text-align:center;
+}
+/*分字母导航样式*/
+a.Small:link {color: #54A404;}
+a.Small:visited {color: #54A404;}
+a.Small:hover{COLOR: #54A404;text-decoration: underline;}
+a.Small:active {color: #54A404;}
+/*字母导航背景样式*/
+.smallbg
+{
+background:#F7FFE7;
+height:25px;
+text-align:center;
+color: #54A404;
+font-weight:bold;
+}
+/*左边导航样式*/
+.leftbg
+{
+background:url(../Images/a306/leftbg.gif);
+height:24px;
+text-align:center;
+color: #ffffff;
+font-weight:bold;
+padding-top:4px;
+}
+/*列表头样式*/
+.zhuanjibg
+{
+background:#6EB725;
+height:20px;
+text-align:center;
+color:#ffffff;
+padding-top:4px;
+}
+/*音乐列表样式1*/
+.musicborder
+{
+border:1px #6EB725 solid;
+}
+.musicjj
+{
+border:1px #6EB725 dotted;
+}
+.playstyle
+{
+font-weight:bold;
+color:#333333;
+}
