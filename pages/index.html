@@ -1,0 +1,543 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<title>全景VR</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				background-color: #000;
+				color: #fff;
+				margin: 0;
+				overflow: hidden;
+			}
+            #fullScreen{
+                position: absolute;
+                width: 62px;
+                height:62px;
+                background: url(img/menuicon.png) no-repeat;
+                z-index: 999;
+                background-position: -130px -660px;top: 20px;right: 20px;
+            }
+            #tips{
+                position: absolute;
+                width: 240px;
+                height: 80px;
+                line-height: 80px;
+                top: 50%;
+                left: 50%;
+                margin-top: -40px;
+                margin-left: -120px;
+                opacity: 0;
+                border-radius:2px ;
+                border: 1px solid rgba(150,150,150,0.8);
+                background-color: rgba(50,50,50,0.2);
+                color: #ffffff;
+                font-size: 40px;
+                text-align: center;
+                pointer-events: none;
+            }
+            #VR{
+                position: absolute;
+                width: 62px;
+                height:62px;
+                background: url(img/menuicon.png) no-repeat;
+                z-index: 999;
+                background-position: -0px -590px;
+                top: 100px;
+                right: 20px;
+            }
+		</style>
+	</head>
+	<body>
+		<div id="container"></div>
+        <div id="fullScreen"></div>
+        <div id="tips">声音已开启</div>
+        <!--<audio autoplay loop src="audio/test.mp3" id="audio"></audio>-->
+        <div id="VR"></div>
+		<script src="js/three.min.js"></script>
+		<script src="js/tween.js"></script>
+		<script src="js/miaov.js"></script>
+		<script src="js/stereoeffect.js"></script>
+		<script src="js/deviceorientationcontrols.js"></script>
+		<!--<script src="js/Projector.js"></script>-->
+		<!--<script src="js/OrbitControls.js" type="text/javascript" charset="utf-8"></script>-->
+		<!--<script src="js/THREEx.FullScreen.js" type="text/javascript" charset="utf-8"></script>-->
+		<script>
+            var hotPoint = [
+                {pos1X:-30,pos1Y:-70,pos1Z:-500,pos2X:-40,pos2Y:-90,pos2Z:-500,name:'c01',info:'进入场景二'},
+                {pos1X:400,pos1Y:0,pos1Z:-200,pos2X:390,pos2Y:-20,pos2Z:-200,name:'c02',info:'进入场景三'},
+                {pos1X:-250,pos1Y:-70,pos1Z:-100,pos2X:-260,pos2Y:-90,pos2Z:-100,name:'c03',info:'进入场景四'},
+                {pos1X:500,pos1Y:0,pos1Z:0,pos2X:510,pos2Y:-20,pos2Z:0,name:'c04',info:'进入场景五'},
+                {pos1X:-30,pos1Y:-70,pos1Z:-500,pos2X:-40,pos2Y:-90,pos2Z:-500,name:'c05',info:'进入场景一'}
+            ];
+			var container;
+			var camera, scene, renderer;
+			var target = new THREE.Vector3();
+			var mesh;
+			var timer;
+			var oFullScreen = document.getElementById('fullScreen'),
+                oAudio = document.getElementById('audio'),
+                oTips = document.getElementById('tips'),
+                onDevice = document.getElementById('VR');
+			var Devices, effect;
+            var hotFont, hotImg, annie;
+            var group = new THREE.Group();
+            var clock = new THREE.Clock();
+            var raycaster = new THREE.Raycaster();
+            var intersects;
+            var lon = - 90,
+				lat = 0,
+                phi = 0,
+                theta,
+				onPointerDownPointerX,
+                onPointerDownPointerY,
+                onPointerDownLon,
+            	onPointerDownLat;
+			var isUserInteracting = false,
+                isDeviceing = false,
+                isChanged = false,
+			    Status = 0;
+			init();
+            animate();
+			function init(){
+			    container = document.getElementById('container');
+			    //scene
+			    scene = new THREE.Scene();
+                scene.add(group);
+
+				//camera
+				camera = new THREE.PerspectiveCamera(140, window.innerWidth / window.innerHeight, 0.1, 10000);
+				camera.position.set(0,999,0);
+                target.set(0, 0, 0);
+				camera.lookAt(target);
+
+                //light
+                var ambientLight = new THREE.AmbientLight(0xffffff);
+                scene.add(ambientLight);
+
+				//render
+				renderer = new THREE.WebGLRenderer({
+					antialias: true
+				});
+				renderer.setSize(window.innerWidth, window.innerHeight);
+				container.appendChild(renderer.domElement);
+
+				//panorama
+				var texture = new THREE.TextureLoader().load('lande/c01.jpg',function(){
+					var geometry = new THREE.SphereGeometry(1000, 100, 100);
+					var material = new THREE.MeshLambertMaterial({
+						map: texture,
+						side: THREE.DoubleSide
+					});
+					mesh = new THREE.Mesh(geometry, material);
+					scene.add(mesh);
+					mesh.position.set(0, 0, 0);
+					//drop
+                    setTimeout(function(){
+                        new TWEEN.Tween(camera.position)
+                            .to({ x: 0, y: 0, z: 0 }, 3000)
+                            .easing(TWEEN.Easing.Exponential.InOut)
+                            .start().onComplete(function(){
+                                Status = 1;
+                            });
+                        new TWEEN.Tween(target)
+                            .to({ x: 0, y: 0, z: -500}, 3000)
+                            .easing(TWEEN.Easing.Exponential.InOut)
+                            .start().onComplete(function(){
+                                group.add(hotFont);
+                                group.add(hotImg);
+                        	});
+                        clearInterval(timer);
+                        timer = setInterval(function(){
+                            camera.fov-=0.2;
+                            camera.updateProjectionMatrix();
+                            if(camera.fov <= 60){
+                                camera.fov = 60;
+                                camera.updateProjectionMatrix();
+                                clearInterval(timer);
+                            }
+                        },1)
+                    },1000);
+				});
+
+                //HotPoint
+                createHotPoint(hotPoint[0]);
+
+                //Devices
+                Devices = new THREE.DeviceOrientationControls(camera);
+                Devices.connect();
+
+                //effect
+                effect = new THREE.StereoEffect(renderer);
+                effect._stereo.eyeSep = 0.064;
+                effect.setSize(window.innerWidth, window.innerHeight);
+
+                //event
+                renderer.domElement.addEventListener('mousedown', onDocumentMouseDown, false);
+                renderer.domElement.addEventListener('mousemove', onDocumentMouseMove, false);
+                renderer.domElement.addEventListener('mouseup', onDocumentMouseUp, false);
+                renderer.domElement.addEventListener('mousewheel', onDocumentMouseWheel, false);
+                renderer.domElement.addEventListener('touchstart', onDocumentTouchStart, false);
+                renderer.domElement.addEventListener('touchmove', onDocumentTouchMove, false);
+
+//                oFullScreen.addEventListener('click', fullScreen, false);
+                onDevice.addEventListener('click', controlDevice, false);
+
+                window.addEventListener('resize', onWindowResize, false);
+                document.addEventListener('mouseup', myClick, false);
+                document.addEventListener('touchend', myClick, false);
+			}
+
+			function createHotPoint(hotPoint){
+			    //hotFont
+			    hotFont = makeTextSprite(
+			        hotPoint.info,
+                    {
+                        color: 'rgba(255,255,255,1)',
+                        fontSize: 50,
+                        borderColor: 'rgba(100,100,100,0.8)',
+                        backgroundColor: 'rgba(150,150,150,0.5)'
+
+                    }
+                );
+			    hotFont.position.set(hotPoint.pos1X,hotPoint.pos1Y,hotPoint.pos1Z)
+                //hotImg
+                var textureLoader = new THREE.TextureLoader();
+                var map = textureLoader.load( "img/spot14.png");
+                var material =  new THREE.SpriteMaterial({
+                    map: map,
+                    color: 0xffffff,
+                    fog: true
+                });
+                annie = new TextureAnimator( map, 1, 25, 25, 75 );
+                hotImg = new THREE.Sprite(material);
+                hotImg.position.set(hotPoint.pos2X,hotPoint.pos2Y,hotPoint.pos2Z);
+                hotImg.scale.set( 50, 50, 1 );
+                hotImg.name = hotPoint.name;
+            }
+
+            function makeTextSprite(message, parameters){
+			    if(parameters === undefined){
+			        parameters = {};
+                }
+			    var color = parameters.hasOwnProperty('color') ? parameters['color'] : 'rgba(255,255,255,1)';
+			    var fontFace = parameters.hasOwnProperty('fontFace') ? parameters['fontFace'] : 'Arial';
+			    var fontSize = parameters.hasOwnProperty('fontSize') ? parameters['fontSize'] : 16;
+                var borderThickness = parameters.hasOwnProperty("borderThickness") ? parameters["borderThickness"] : 1;
+			    var borderColor = parameters.hasOwnProperty('borderColor') ? parameters['borderColor'] : 'rgba(0,0,0,1)';
+			    var backgroundColor = parameters.hasOwnProperty('backgroundColor') ? parameters['backgroundColor'] : 'rgba(255,255,255,1)';
+
+			    var canvas = document.createElement('canvas');
+                var context = canvas.getContext('2d');
+                context.font = 'Normal ' + fontSize + 'px ' + fontFace;
+
+                var textWidth = context.measureText(message).width;
+
+                //background color
+                context.fillStyle = backgroundColor;
+                //border color
+                context.strokeStyle = borderColor;
+                //borderRadius
+                context.LineWidth = borderThickness;
+                roundRect(
+                    context,
+                    borderThickness / 2,
+                    borderThickness / 2,
+                    textWidth + borderThickness,
+                    fontSize * 1.4 + borderThickness,
+                    2
+                );
+
+                //text color
+                context.fillStyle = color;
+                context.fillText(
+                    message,
+                    borderThickness,
+                    fontSize + borderThickness
+                );
+
+                var texture = new THREE.Texture(canvas);
+                texture.needsUpdate = true;
+                var spriteMaterial = new THREE.SpriteMaterial({
+                    map: texture,
+                    useScreenCoordinates: false
+                });
+                var sprite = new THREE.Sprite(spriteMaterial);
+                sprite.scale.set(100,50,1);
+                return sprite;
+            }
+
+            function roundRect(ctx, x, y, w, h, r){
+                ctx.beginPath();
+                ctx.moveTo(x+r, y);
+                ctx.lineTo(x+w-r, y);
+                ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+                ctx.lineTo(x+w, y+h-r);
+                ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+                ctx.lineTo(x+r, y+h);
+                ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+                ctx.lineTo(x, y+r);
+                ctx.quadraticCurveTo(x, y, x+r, y);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+            }
+
+            function TextureAnimator(texture, tilesHoriz, tilesVert, numTiles, tileDispDuration){
+                // note: texture passed by reference, will be updated by the update function.
+
+                this.tilesHorizontal = tilesHoriz;
+                this.tilesVertical = tilesVert;
+                // how many images does this spritesheet contain?
+                //  usually equals tilesHoriz * tilesVert, but not necessarily,
+                //  if there at blank tiles at the bottom of the spritesheet.
+                this.numberOfTiles = numTiles;
+                texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+                texture.repeat.set( 1 / this.tilesHorizontal, 1 / this.tilesVertical );
+
+                // how long should each image be displayed?
+                this.tileDisplayDuration = tileDispDuration;
+
+                // how long has the current image been displayed?
+                this.currentDisplayTime = 0;
+
+                // which image is currently being displayed?
+                this.currentTile = 0;
+
+                this.update = function( milliSec )
+                {
+                    this.currentDisplayTime += milliSec;
+                    while (this.currentDisplayTime > this.tileDisplayDuration)
+                    {
+                        this.currentDisplayTime -= this.tileDisplayDuration;
+                        this.currentTile++;
+
+                        var currentColumn = this.currentTile % this.tilesHorizontal;
+                        texture.offset.x = currentColumn / this.tilesHorizontal;
+                        var currentRow = Math.floor( this.currentTile / this.tilesHorizontal );
+                        texture.offset.y = currentRow / this.tilesVertical;
+                        if (this.currentTile == this.numberOfTiles)
+                            this.currentTile = 0;
+                    }
+                };
+            }
+
+            function onDocumentMouseDown(event){
+                event.preventDefault();
+                isUserInteracting =  true;
+                onPointerDownPointerX = event.clientX;
+                onPointerDownPointerY = event.clientY;
+                onPointerDownLon = lon;
+                onPointerDownLat = lat;
+            }
+
+            function onDocumentMouseMove(event){
+                if(isUserInteracting === true){
+                    lon = (onPointerDownPointerX - event.clientX) * 0.1 + onPointerDownLon;
+                    lat = (event.clientY - onPointerDownPointerY) * 0.1 + onPointerDownLat;
+                }
+            }
+
+            function onDocumentMouseUp(){
+                isUserInteracting = false;
+            }
+
+            function onDocumentMouseWheel(event){
+                camera.fov -= event.wheelDeltaY * 0.05;
+                camera.updateProjectionMatrix();
+            }
+
+            function onDocumentTouchStart(event){
+                if(event.touches.length == 1){
+                    event.preventDefault();
+                    onPointerDownPointerX = event.touches[0].pageX;
+                    onPointerDownPointerY = event.touches[0].pageY;
+                    onPointerDownLon = lon;
+                    onPointerDownLat = lat;
+                }
+            }
+
+            function onDocumentTouchMove(event){
+                if(event.touches.length == 1){
+                    event.preventDefault();
+                    lon = (onPointerDownPointerX - event.touches[0].pageX) * 0.1 + onPointerDownLon;
+                    lat = (event.touches[0].pageY - onPointerDownPointerY) * 0.1 + onPointerDownLat;
+                }
+            }
+
+            function fullScreen(){
+                if(oAudio.paused){
+                    oTips.innerHTML = '声音已开启';
+                    tweenMove(oTips,{'opacity':100},1000,'linear',function(){
+                        tweenMove(oTips,{'opacity':0},1000,'linear');
+                    });
+                    oAudio.play();
+                }else{
+                    oTips.innerHTML = '声音已关闭';
+                    tweenMove(oTips,{'opacity':100},500,'linear',function(){
+                        tweenMove(oTips,{'opacity':0},500,'linear');
+                    });
+                    oAudio.pause();
+                }
+            }
+
+            function controlDevice(){
+                if (isDeviceing === false) {
+                    isDeviceing = true;
+                    oTips.innerHTML = "开启陀螺仪";
+                    tweenMove(oTips,{'opacity':100},1000,'linear',function(){
+                        tweenMove(oTips,{'opacity':0},1000,'linear');
+                    });
+                } else {
+                    isDeviceing = false;
+                    oTips.innerHTML = "关闭陀螺仪";
+                    tweenMove(oTips,{'opacity':100},500,'linear',function(){
+                        tweenMove(oTips,{'opacity':0},500,'linear');
+                    });
+                }
+            }
+
+            function onWindowResize(){
+                var resize = setInterval(function(){
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                    effect.setSize(window.innerWidth, window.innerHeight);
+                },10);
+                setTimeout(function(){
+                    clearInterval(resize);
+                },1000);
+			}
+
+			function myClick(event){
+                event.preventDefault();
+                if(isDeviceing === false && Status === 1){
+                    var mouse = new THREE.Vector2();
+                    if(event.changedTouches){
+                        mouse.x = ( event.changedTouches[0].clientX / window.innerWidth ) * 2 - 1;
+                        mouse.y = - ( event.changedTouches[0].clientY / window.innerHeight ) * 2 + 1;
+                    }else{
+                        mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+                        mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+                    }
+                    raycaster.setFromCamera( mouse, camera );
+                    intersects = raycaster.intersectObjects(group.children);
+                    if(intersects.length > 0){
+                        //点击场景一
+						if(intersects[0].object.name == 'c01'){
+						    group.remove(hotFont);
+						    group.remove(hotImg);
+						    Status = 0;
+						    createHotPoint(hotPoint[1]);
+						    var texture = new THREE.TextureLoader().load('lande/c03.jpg',function(){
+                                Status = 1;
+                                mesh.material.map = texture;
+                                mesh.material.needsUpdate = true;
+                                group.add(hotFont);
+                                group.add(hotImg);
+                            })
+						}
+						//进入场景二
+                        if(intersects[0].object.name == 'c02'){
+                            group.remove(hotFont);
+                            group.remove(hotImg);
+                            Status = 0;
+                            createHotPoint(hotPoint[2]);
+                            var texture = new THREE.TextureLoader().load('lande/c02.jpg',function(){
+                                Status = 1;
+                                mesh.material.map = texture;
+                                mesh.material.needsUpdate = true;
+                                group.add(hotFont);
+                                group.add(hotImg);
+                            })
+                        }
+                        //进入场景三
+                        if(intersects[0].object.name == 'c03'){
+                            group.remove(hotFont);
+                            group.remove(hotImg);
+                            Status = 0;
+                            createHotPoint(hotPoint[3]);
+                            var texture = new THREE.TextureLoader().load('lande/c04.jpg',function(){
+                                Status = 1;
+                                mesh.material.map = texture;
+                                mesh.material.needsUpdate = true;
+                                group.add(hotFont);
+                                group.add(hotImg);
+                            })
+                        }
+                        //进入场景四
+                        if(intersects[0].object.name == 'c04'){
+                            group.remove(hotFont);
+                            group.remove(hotImg);
+                            Status = 0;
+                            createHotPoint(hotPoint[4]);
+                            var texture = new THREE.TextureLoader().load('lande/c05.jpg',function(){
+                                Status = 1;
+                                mesh.material.map = texture;
+                                mesh.material.needsUpdate = true;
+                                group.add(hotFont);
+                                group.add(hotImg);
+                            })
+                        }
+                        //进入场景五
+                        if(intersects[0].object.name == 'c05'){
+                            group.remove(hotFont);
+                            group.remove(hotImg);
+                            Status = 0;
+                            createHotPoint(hotPoint[0]);
+                            var texture = new THREE.TextureLoader().load('lande/c01.jpg',function(){
+                                Status = 1;
+                                mesh.material.map = texture;
+                                mesh.material.needsUpdate = true;
+                                group.add(hotFont);
+                                group.add(hotImg);
+                            })
+                        }
+					}
+				}
+			}
+
+			function animate(){
+                requestAnimationFrame(animate);
+                if(isDeviceing === false){
+                    camera.lookAt( target );
+                }
+                render();
+                TWEEN.update();
+
+                var delta = clock.getDelta();
+                annie.update(2000 * delta);
+
+                if(isDeviceing === false && Status === 1){
+                    lat = Math.max(-89, Math.min(89, lat));
+                    phi = THREE.Math.degToRad(90 - lat);
+                    theta = THREE.Math.degToRad(lon);
+                    target.x = 500 * Math.sin(phi) * Math.cos(theta);
+                    target.y = 500 * Math.cos(phi);
+                    target.z = 500 * Math.sin(phi) * Math.sin(theta);
+                }else{
+                    if(Status === 1){
+                        Devices.update();
+                    }
+                }
+			}
+
+			function render(){
+			    if(isDeviceing === false){
+                    renderer.render(scene, camera);
+                    if(isChanged){
+                        renderer.setSize( window.innerWidth, window.innerHeight );
+                        isChanged = false;
+                    }
+                }else{
+			        effect.render(scene, camera);
+                    if(!isChanged){
+                        effect.setSize( window.innerWidth, window.innerHeight );
+                        isChanged = true;
+                    }
+                }
+			}
+		</script>
+	</body>
+</html>
